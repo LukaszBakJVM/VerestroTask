@@ -5,6 +5,8 @@ import org.example.verestrotask.client.dto.ClientRegistration;
 import org.example.verestrotask.client.dto.ClientRegistrationResponse;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,8 +25,12 @@ public class ClientService {
         return clientMapper.RegistrationResponse(save);
 
     }
-  public   Optional<ClientRegistrationResponse>findByUsername(String username){
-        return clientRepository.findByUsername(username).map(client -> clientMapper.RegistrationResponse(client));
+  public   Optional<ClientRegistration>findByUsername(String username){
+        return clientRepository.findByUsername(username).map(clientMapper::clientRegistration);
+    }
+    List<String>PreferredNotificationChannel(){
+      return Arrays.stream(PreferredNotificationChannel.values()).map(PreferredNotificationChannel::getChanelNotyfication).toList();
+
     }
 
 }

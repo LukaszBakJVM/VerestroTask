@@ -27,6 +27,11 @@ public class ClientMapper {
         return client;
     }
 
+    ClientRegistration clientRegistration(Client client) {
+        String s = enumToString(client.getPreferredNotificationChannel());
+        return new ClientRegistration(client.getUsername(), client.getPassword(), client.getPhoneNumber(), client.getEmail(), s);
+    }
+
     ClientRegistrationResponse RegistrationResponse(Client client) {
         String chanel = enumToString(client.getPreferredNotificationChannel());
         return new ClientRegistrationResponse(client.getUsername(), client.getPhoneNumber(), client.getEmail(), chanel);

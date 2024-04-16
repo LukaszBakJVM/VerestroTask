@@ -1,6 +1,7 @@
 package org.example.verestrotask.client.security;
 
 import org.example.verestrotask.client.ClientService;
+import org.example.verestrotask.client.dto.ClientRegistration;
 import org.example.verestrotask.client.dto.ClientRegistrationResponse;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,10 +22,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         return clientService.findByUsername(username).map(this::createUserDetails).orElseThrow();
     }
 
-    private UserDetails createUserDetails(ClientRegistrationResponse response) {
-        return User.builder()
-                .username(response.email())
-                .password(response.phoneNumber())
+    private UserDetails createUserDetails(ClientRegistration response) {
+        return User.builder().username(response.email()).password(response.password())
 
                 .build();
     }
