@@ -20,19 +20,20 @@ public class SecurityConfiguration {
         return new MvcRequestMatcher.Builder(introspector);
     }
 
-    @Bean
+  /*  @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(r->r.requestMatchers("/client/registrarion").permitAll());
        // http.authorizeHttpRequests(r->r.requestMatchers("/login").permitAll());
       // http.formLogin(login -> login.loginPage("/login").permitAll());
-       http.formLogin(AbstractAuthenticationFilterConfigurer::permitAll);
+     //  http.formLogin(AbstractAuthenticationFilterConfigurer::permitAll);
+       http.authorizeHttpRequests(r->r.anyRequest().authenticated());
 
 
         //http.authorizeHttpRequests(r->r.requestMatchers("/").permitAll());
 
         return http.build();
-    }
+    }*/
     @Bean
     PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
