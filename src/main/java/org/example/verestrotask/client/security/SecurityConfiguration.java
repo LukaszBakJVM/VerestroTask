@@ -22,11 +22,11 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-      //  http.csrf(AbstractHttpConfigurer::disable);
+        http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(r->r.requestMatchers("/client/registrarion").permitAll());
        // http.authorizeHttpRequests(r->r.requestMatchers("/login").permitAll());
       // http.formLogin(login -> login.loginPage("/login").permitAll());
-        http.formLogin(AbstractAuthenticationFilterConfigurer::permitAll);
+       http.formLogin(AbstractAuthenticationFilterConfigurer::permitAll);
 
 
         //http.authorizeHttpRequests(r->r.requestMatchers("/").permitAll());

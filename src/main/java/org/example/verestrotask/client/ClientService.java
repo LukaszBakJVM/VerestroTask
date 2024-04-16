@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.example.verestrotask.client.dto.ClientLogin;
 import org.example.verestrotask.client.dto.ClientRegistration;
 import org.example.verestrotask.client.dto.ClientRegistrationResponse;
+import org.example.verestrotask.exception.ClientExistException;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -23,6 +24,10 @@ public class ClientService {
     @Transactional
     ClientRegistrationResponse registration(ClientRegistration clientRegistration) {
         Client client = clientMapper.registrationDtoToEntity(clientRegistration);
+        Optional<Client> byUsername = clientRepository.findByUsername(client.getUsername());
+        byUsername.ifPresent(p -> {
+            throw new ClientExistException("User with  login " + client.getUsername() + " exist");
+        });
         Client save = clientRepository.save(client);
         return clientMapper.RegistrationResponse(save);
 
