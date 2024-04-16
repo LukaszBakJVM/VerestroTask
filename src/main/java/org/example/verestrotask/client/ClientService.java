@@ -1,6 +1,7 @@
 package org.example.verestrotask.client;
 
 import jakarta.transaction.Transactional;
+import org.example.verestrotask.client.dto.ClientLogin;
 import org.example.verestrotask.client.dto.ClientRegistration;
 import org.example.verestrotask.client.dto.ClientRegistrationResponse;
 import org.springframework.stereotype.Service;
@@ -18,18 +19,21 @@ public class ClientService {
         this.clientRepository = clientRepository;
         this.clientMapper = clientMapper;
     }
+
     @Transactional
-    ClientRegistrationResponse registration(ClientRegistration clientRegistration){
+    ClientRegistrationResponse registration(ClientRegistration clientRegistration) {
         Client client = clientMapper.registrationDtoToEntity(clientRegistration);
         Client save = clientRepository.save(client);
         return clientMapper.RegistrationResponse(save);
 
     }
-  public   Optional<ClientRegistration>findByUsername(String username){
-        return clientRepository.findByUsername(username).map(clientMapper::clientRegistration);
+
+    public Optional<ClientLogin> findByUsername(String username) {
+        return clientRepository.findByUsername(username).map(clientMapper::loginMapper);
     }
-    List<String>PreferredNotificationChannel(){
-      return Arrays.stream(PreferredNotificationChannel.values()).map(PreferredNotificationChannel::getChanelNotyfication).toList();
+
+    List<String> PreferredNotificationChannel() {
+        return Arrays.stream(PreferredNotificationChannel.values()).map(PreferredNotificationChannel::getChanelNotyfication).toList();
 
     }
 

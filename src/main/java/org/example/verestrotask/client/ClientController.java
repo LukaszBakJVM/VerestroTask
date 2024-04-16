@@ -17,14 +17,16 @@ public class ClientController {
     public ClientController(ClientService clientService) {
         this.clientService = clientService;
     }
+
     @PostMapping("/registrarion")
-    ResponseEntity<ClientRegistrationResponse> registration(@RequestBody ClientRegistration clientRegistration){
+    ResponseEntity<ClientRegistrationResponse> registration(@RequestBody ClientRegistration clientRegistration) {
         ClientRegistrationResponse registration = clientService.registration(clientRegistration);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().buildAndExpand(registration).toUri();
         return ResponseEntity.created(uri).body(registration);
     }
+
     @GetMapping("/chanelNotification")
-    List<String>allChanel(){
+    List<String> allChanel() {
         return clientService.PreferredNotificationChannel();
     }
 

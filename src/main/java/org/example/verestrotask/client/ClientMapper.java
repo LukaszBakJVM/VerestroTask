@@ -1,5 +1,6 @@
 package org.example.verestrotask.client;
 
+import org.example.verestrotask.client.dto.ClientLogin;
 import org.example.verestrotask.client.dto.ClientRegistration;
 import org.example.verestrotask.client.dto.ClientRegistrationResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,4 +48,9 @@ public class ClientMapper {
         return channel.getChanelNotyfication();
     }
 
+    ClientLogin loginMapper(Client client) {
+        return new ClientLogin(client.getUsername(), client.getPassword());
+    }
+
 }
+

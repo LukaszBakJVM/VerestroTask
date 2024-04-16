@@ -15,12 +15,12 @@ public class Client {
     private String username;
     @Size(min = 6)
     private String password;
-    @Pattern(regexp="[0-9]{9}")
+    @Pattern(regexp = "[0-9]{9}")
     private String phoneNumber;
     @Email
     private String email;
     @OneToOne
-     private Account account;
+    private Account account;
     @Enumerated(EnumType.STRING)
     private PreferredNotificationChannel preferredNotificationChannel;
 
