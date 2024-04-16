@@ -3,6 +3,7 @@ package org.example.verestrotask.client.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,9 +22,11 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable);
-        http.authorizeHttpRequests(r->r.requestMatchers("/client/*").permitAll());
-       // http.formLogin(login -> login.loginPage("/login").permitAll());
+      //  http.csrf(AbstractHttpConfigurer::disable);
+        http.authorizeHttpRequests(r->r.requestMatchers("/client/registrarion").permitAll());
+       // http.authorizeHttpRequests(r->r.requestMatchers("/login").permitAll());
+      // http.formLogin(login -> login.loginPage("/login").permitAll());
+        http.formLogin(AbstractAuthenticationFilterConfigurer::permitAll);
 
 
         //http.authorizeHttpRequests(r->r.requestMatchers("/").permitAll());

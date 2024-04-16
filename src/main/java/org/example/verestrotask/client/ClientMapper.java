@@ -49,6 +49,7 @@ public class ClientMapper {
     }
 
     ClientLogin loginMapper(Client client) {
+
         return new ClientLogin(client.getUsername(), client.getPassword());
     }
 
