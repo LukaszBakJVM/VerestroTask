@@ -17,4 +17,11 @@ public class ExceptionsController {
         response.put("message",ex.getMessage());
         return response;
     }
+    @ExceptionHandler(AccountExistException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, Object> duplicateAccount(AccountExistException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message",ex.getMessage());
+        return response;
+    }
 }

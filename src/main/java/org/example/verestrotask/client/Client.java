@@ -71,4 +71,12 @@ public class Client {
     public void setPreferredNotificationChannel(PreferredNotificationChannel preferredNotificationChannel) {
         this.preferredNotificationChannel = preferredNotificationChannel;
     }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
 }
