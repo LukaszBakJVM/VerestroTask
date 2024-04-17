@@ -40,12 +40,12 @@ public class ClientMapper {
     }
 
     private PreferredNotificationChannel stringToEnum(String s) {
-        return Arrays.stream(PreferredNotificationChannel.values()).filter(ch -> ch.getChanelNotyfication().equals(s)).findAny().get();
+        return Arrays.stream(PreferredNotificationChannel.values()).filter(ch -> ch.getCHANNEL_NOTIFICATION().equals(s)).findAny().get();
 
     }
 
     private String enumToString(PreferredNotificationChannel channel) {
-        return channel.getChanelNotyfication();
+        return channel.getCHANNEL_NOTIFICATION();
     }
 
     ClientLogin loginMapper(Client client) {

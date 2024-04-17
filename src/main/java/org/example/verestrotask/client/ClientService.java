@@ -38,7 +38,7 @@ public class ClientService {
     }
 
     List<String> PreferredNotificationChannel() {
-        return Arrays.stream(PreferredNotificationChannel.values()).map(PreferredNotificationChannel::getChanelNotyfication).toList();
+        return Arrays.stream(PreferredNotificationChannel.values()).map(PreferredNotificationChannel::getCHANNEL_NOTIFICATION).toList();
 
     }
 

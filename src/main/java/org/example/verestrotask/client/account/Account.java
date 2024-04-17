@@ -10,10 +10,11 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-   private String identifier;
-   private BigDecimal balance;
-   @Enumerated(EnumType.STRING)
-    private PromotionalCode promotionalCode;
+    private String identifier;
+    private BigDecimal balance;
+    private int dayLimit;
+
+
 
     public long getId() {
         return id;
@@ -39,11 +40,13 @@ public class Account {
         this.balance = balance;
     }
 
-    public PromotionalCode getPromotionalCode() {
-        return promotionalCode;
+
+
+    public int getDayLimit() {
+        return dayLimit;
     }
 
-    public void setPromotionalCode(PromotionalCode promotionalCode) {
-        this.promotionalCode = promotionalCode;
+    public void setDayLimit(int dayLimit) {
+        this.dayLimit = dayLimit;
     }
 }

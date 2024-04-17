@@ -3,15 +3,14 @@ package org.example.verestrotask.client;
 public enum PreferredNotificationChannel {
 
 
-    SMS("Sms"), EMAIL("Email");
-    private final String channelNotification;
+    SMS("Sms"),  EMAIL("Email");
+    private final String CHANNEL_NOTIFICATION ;
 
-    PreferredNotificationChannel(String chanelNotyfication) {
-        this.channelNotification = chanelNotyfication;
+    PreferredNotificationChannel(String CHANNEL_NOTIFICATION) {
+        this.CHANNEL_NOTIFICATION = CHANNEL_NOTIFICATION;
     }
 
-    public String getChanelNotyfication() {
-        return channelNotification;
+    public String getCHANNEL_NOTIFICATION() {
+        return CHANNEL_NOTIFICATION;
     }
-
 }
