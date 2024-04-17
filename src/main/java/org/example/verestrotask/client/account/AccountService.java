@@ -18,8 +18,6 @@ import java.util.Optional;
 
 @Service
 public class AccountService {
-    private final int COUNT_TRANSFER =1;
-    private final int DAY_LIMIT =3;
     private final AccountRepository repository;
     private final ClientRepository clientRepository;
     private final AccountMapper mapper;
@@ -29,12 +27,13 @@ public class AccountService {
         this.clientRepository = clientRepository;
         this.mapper = mapper;
     }
+
     @Transactional
-    AccountResponseDto setAccount(AccountDto dto,String username){
+    AccountResponseDto setAccount(AccountDto dto, String username) {
         Client client = clientRepository.findByUsername(username).orElseThrow();
         Account accountExist = client.getAccount();
-        if (accountExist!=null){
-            throw  new  AccountExistException("You can  have only 1 account");
+        if (accountExist != null) {
+            throw new AccountExistException("You can  have only 1 account");
         }
         Account account = mapper.dtoToEntity(dto);
         Account save = repository.save(account);
@@ -42,34 +41,39 @@ public class AccountService {
         clientRepository.save(client);
         return mapper.entityToDto(save);
     }
-    List<String>promotions(){
+
+    List<String> promotions() {
         return Arrays.stream(PromotionalCode.values()).map(PromotionalCode::name).toList();
     }
+
     @Transactional
-    TransferResponse send(Transfer transfer, String username){
+    TransferResponse send(Transfer transfer, String username) {
         Optional<Account> byIdentifier = repository.findByIdentifier(transfer.identifier());
-        if (byIdentifier.isEmpty()){
-            throw new AccountExistException("Account  "+transfer.identifier()+" does not exist");
+        if (byIdentifier.isEmpty()) {
+            throw new AccountExistException("Account  " + transfer.identifier() + " does not exist");
         }
         Client client = clientRepository.findByUsername(username).orElseThrow();
         Account account = client.getAccount();
-        if (account.getDayLimit()<0){
+        if (account.getDayLimit() < 1) {
             throw new LimitException("Operation limit exceeded");
-        }else if (account.getBalance().compareTo(transfer.amount())<0){
+        } else if (account.getBalance().compareTo(transfer.amount()) < 0) {
             throw new LimitException("Insufficient funds");
         }
         account.setBalance(account.getBalance().subtract(transfer.amount()));
-        account.setDayLimit(account.getDayLimit()-COUNT_TRANSFER);
+        int COUNT_TRANSFER = 1;
+        account.setDayLimit(account.getDayLimit() - COUNT_TRANSFER);
         Account transferAccount = byIdentifier.get();
         transferAccount.setBalance(transferAccount.getBalance().add(transfer.amount()));
         Account save = repository.save(account);
         repository.save(transferAccount);
         return new TransferResponse(save.getBalance());
     }
+
     @Scheduled(cron = "0 0 0 * * *")
-    public void resetDayLimit(){
+    public void resetDayLimit() {
         List<Account> differentThan3 = repository.findAll().stream().filter(account -> account.getDayLimit() != 3).toList();
-        for (Account a:differentThan3){
+        for (Account a : differentThan3) {
+            int DAY_LIMIT = 3;
             a.setDayLimit(DAY_LIMIT);
             repository.save(a);
         }
