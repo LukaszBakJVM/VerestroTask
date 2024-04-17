@@ -14,14 +14,24 @@ public class ExceptionsController {
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, Object> duplicateClient(ClientExistException ex) {
         Map<String, Object> response = new HashMap<>();
-        response.put("message",ex.getMessage());
+        response.put("message", ex.getMessage());
         return response;
     }
+
     @ExceptionHandler(AccountExistException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, Object> duplicateAccount(AccountExistException ex) {
         Map<String, Object> response = new HashMap<>();
-        response.put("message",ex.getMessage());
+        response.put("message", ex.getMessage());
         return response;
     }
+
+    @ExceptionHandler(LimitException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, Object> limit(LimitException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        return response;
+    }
+
 }

@@ -2,13 +2,12 @@ package org.example.verestrotask.client.account;
 
 import org.example.verestrotask.client.account.dto.AccountDto;
 import org.example.verestrotask.client.account.dto.AccountResponseDto;
-import org.springframework.http.ResponseEntity;
+import org.example.verestrotask.client.account.dto.Transfer;
+import org.example.verestrotask.client.account.dto.TransferResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -20,18 +19,28 @@ public class AccountController {
     public AccountController(AccountService accountService) {
         this.accountService = accountService;
     }
+
     @PostMapping
-   ResponseEntity< AccountResponseDto> setAccount(@RequestBody AccountDto dto, @RequestParam String username){
+    AccountResponseDto setAccount(@RequestBody AccountDto dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String name = authentication.getName();
-        AccountResponseDto accountResponseDto = accountService.setAccount(dto,username);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().buildAndExpand(accountResponseDto).toUri();
-        return ResponseEntity.created(uri).body(accountResponseDto);
+        return accountService.setAccount(dto, name);
+
 
     }
+
     @GetMapping("/promotions")
-    List<String>promotions(){
+    List<String> promotions() {
         return accountService.promotions();
+    }
+
+    @PostMapping("/transfer")
+    TransferResponse bankTransfer(@RequestBody Transfer transfer) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String name = authentication.getName();
+        return accountService.send(transfer, name);
+
+
     }
 
 

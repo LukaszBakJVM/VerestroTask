@@ -34,4 +34,5 @@ public class AccountMapper {
         int balance1 = balance.getBALANCE();
         return BigDecimal.valueOf(balance1);
     }
+
 }

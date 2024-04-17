@@ -2,11 +2,8 @@ package org.example.verestrotask.client;
 
 import org.example.verestrotask.client.dto.ClientRegistration;
 import org.example.verestrotask.client.dto.ClientRegistrationResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -18,11 +15,10 @@ public class ClientController {
         this.clientService = clientService;
     }
 
-    @PostMapping("/registrarion")
-    ResponseEntity<ClientRegistrationResponse> registration(@RequestBody ClientRegistration clientRegistration) {
-        ClientRegistrationResponse registration = clientService.registration(clientRegistration);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().buildAndExpand(registration).toUri();
-        return ResponseEntity.created(uri).body(registration);
+    @PostMapping("/registration")
+    ClientRegistrationResponse registration(@RequestBody ClientRegistration clientRegistration) {
+        return clientService.registration(clientRegistration);
+
     }
 
     @GetMapping("/chanelNotification")
