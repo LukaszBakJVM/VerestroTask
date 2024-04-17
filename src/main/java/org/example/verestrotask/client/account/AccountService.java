@@ -60,8 +60,8 @@ public class AccountService {
             throw new LimitException("Insufficient funds");
         }
         account.setBalance(account.getBalance().subtract(transfer.amount()));
-        int COUNT_TRANSFER = 1;
-        account.setDayLimit(account.getDayLimit() - COUNT_TRANSFER);
+        int countTransfer = 1;
+        account.setDayLimit(account.getDayLimit() - countTransfer);
         Account transferAccount = byIdentifier.get();
         transferAccount.setBalance(transferAccount.getBalance().add(transfer.amount()));
         Account save = repository.save(account);
@@ -73,8 +73,8 @@ public class AccountService {
     public void resetDayLimit() {
         List<Account> differentThan3 = repository.findAll().stream().filter(account -> account.getDayLimit() != 3).toList();
         for (Account a : differentThan3) {
-            int DAY_LIMIT = 3;
-            a.setDayLimit(DAY_LIMIT);
+            int dayLimit = 3;
+            a.setDayLimit(dayLimit);
             repository.save(a);
         }
 
