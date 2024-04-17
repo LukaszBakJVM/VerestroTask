@@ -9,6 +9,7 @@ import org.example.verestrotask.client.account.dto.Transfer;
 import org.example.verestrotask.client.account.dto.TransferResponse;
 import org.example.verestrotask.exception.AccountExistException;
 import org.example.verestrotask.exception.LimitException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -17,6 +18,8 @@ import java.util.Optional;
 
 @Service
 public class AccountService {
+    private final int COUNT_TRANSFER =1;
+    private final int DAY_LIMIT =3;
     private final AccountRepository repository;
     private final ClientRepository clientRepository;
     private final AccountMapper mapper;
@@ -46,7 +49,7 @@ public class AccountService {
     TransferResponse send(Transfer transfer, String username){
         Optional<Account> byIdentifier = repository.findByIdentifier(transfer.identifier());
         if (byIdentifier.isEmpty()){
-            throw new AccountExistException("Account with "+transfer.identifier()+" id does not exist");
+            throw new AccountExistException("Account  "+transfer.identifier()+" does not exist");
         }
         Client client = clientRepository.findByUsername(username).orElseThrow();
         Account account = client.getAccount();
@@ -56,11 +59,23 @@ public class AccountService {
             throw new LimitException("Insufficient funds");
         }
         account.setBalance(account.getBalance().subtract(transfer.amount()));
+        account.setDayLimit(account.getDayLimit()-COUNT_TRANSFER);
         Account transferAccount = byIdentifier.get();
         transferAccount.setBalance(transferAccount.getBalance().add(transfer.amount()));
         Account save = repository.save(account);
         repository.save(transferAccount);
         return new TransferResponse(save.getBalance());
     }
+    @Scheduled(cron = "0 0 0 * * *")
+    public void resetDayLimit(){
+        List<Account> differentThan3 = repository.findAll().stream().filter(account -> account.getDayLimit() != 3).toList();
+        for (Account a:differentThan3){
+            a.setDayLimit(DAY_LIMIT);
+            repository.save(a);
+        }
+
+
+    }
+
 
 }
