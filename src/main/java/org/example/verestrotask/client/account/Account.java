@@ -1,6 +1,9 @@
 package org.example.verestrotask.client.account;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 import java.math.BigDecimal;
 
@@ -10,10 +13,9 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String identifier;
+    private int identifier;
     private BigDecimal balance;
     private int dayLimit;
-
 
 
     public long getId() {
@@ -24,11 +26,11 @@ public class Account {
         this.id = id;
     }
 
-    public String getIdentifier() {
+    public int getIdentifier() {
         return identifier;
     }
 
-    public void setIdentifier(String identifier) {
+    public void setIdentifier(int identifier) {
         this.identifier = identifier;
     }
 
@@ -39,7 +41,6 @@ public class Account {
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
-
 
 
     public int getDayLimit() {

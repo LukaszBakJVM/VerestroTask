@@ -5,17 +5,17 @@ import org.example.verestrotask.client.account.dto.AccountResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.UUID;
+import java.util.Random;
 
 @Service
 public class AccountMapper {
-    private final int DAT_LIMIT = 3;
 
     Account dtoToEntity(AccountDto dto) {
         Account account = new Account();
         account.setIdentifier(identifier());
         BigDecimal bigDecimal = enumToBigDecimal(dto.balance());
         account.setBalance(bigDecimal);
+        int DAT_LIMIT = 3;
         account.setDayLimit(DAT_LIMIT);
         return account;
     }
@@ -24,9 +24,11 @@ public class AccountMapper {
         return new AccountResponseDto(account.getIdentifier(), account.getBalance(), account.getDayLimit());
     }
 
-    private String identifier() {
-        String uuid = UUID.randomUUID().toString().replace("-", "");
-        return uuid.substring(0, 20);
+    private int identifier() {
+        Random random = new Random();
+        int part1 = random.nextInt(100000);
+        int part2 = random.nextInt(100000);
+        return Integer.parseInt(String.format("%05d%05d", part1, part2));
     }
 
 

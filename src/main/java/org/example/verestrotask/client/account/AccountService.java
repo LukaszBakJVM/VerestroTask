@@ -9,6 +9,8 @@ import org.example.verestrotask.client.account.dto.Transfer;
 import org.example.verestrotask.client.account.dto.TransferResponse;
 import org.example.verestrotask.exception.AccountExistException;
 import org.example.verestrotask.exception.LimitException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +20,15 @@ import java.util.Optional;
 
 @Service
 public class AccountService {
-    private final AccountRepository repository;
+    private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
+
+    private final AccountRepository accountRepository;
     private final ClientRepository clientRepository;
     private final AccountMapper mapper;
 
-    public AccountService(AccountRepository repository, ClientRepository clientRepository, AccountMapper mapper) {
-        this.repository = repository;
+    public AccountService(AccountRepository accountRepository, ClientRepository clientRepository, AccountMapper mapper) {
+
+        this.accountRepository = accountRepository;
         this.clientRepository = clientRepository;
         this.mapper = mapper;
     }
@@ -36,7 +41,7 @@ public class AccountService {
             throw new AccountExistException("You can  have only 1 account");
         }
         Account account = mapper.dtoToEntity(dto);
-        Account save = repository.save(account);
+        Account save = accountRepository.save(account);
         client.setAccount(save);
         clientRepository.save(client);
         return mapper.entityToDto(save);
@@ -48,11 +53,12 @@ public class AccountService {
 
     @Transactional
     TransferResponse send(Transfer transfer, String username) {
-        Optional<Account> byIdentifier = repository.findByIdentifier(transfer.identifier());
+        Optional<Account> byIdentifier = accountRepository.findByIdentifier(transfer.identifier());
         if (byIdentifier.isEmpty()) {
             throw new AccountExistException("Account  " + transfer.identifier() + " does not exist");
         }
         Client client = clientRepository.findByUsername(username).orElseThrow();
+        String channelNotification = client.getPreferredNotificationChannel().getCHANNEL_NOTIFICATION();
         Account account = client.getAccount();
         if (account.getDayLimit() < 1) {
             throw new LimitException("Operation limit exceeded");
@@ -64,21 +70,32 @@ public class AccountService {
         account.setDayLimit(account.getDayLimit() - countTransfer);
         Account transferAccount = byIdentifier.get();
         transferAccount.setBalance(transferAccount.getBalance().add(transfer.amount()));
-        Account save = repository.save(account);
-        repository.save(transferAccount);
+        Account save = accountRepository.save(account);
+        accountRepository.save(transferAccount);
+        sendMessage(channelNotification, client, transfer);
         return new TransferResponse(save.getBalance());
     }
 
     @Scheduled(cron = "0 0 0 * * *")
+
     public void resetDayLimit() {
-        List<Account> differentThan3 = repository.findAll().stream().filter(account -> account.getDayLimit() != 3).toList();
+        List<Account> differentThan3 = accountRepository.findAll().stream().filter(account -> account.getDayLimit() != 3).toList();
         for (Account a : differentThan3) {
             int dayLimit = 3;
             a.setDayLimit(dayLimit);
-            repository.save(a);
+            accountRepository.save(a);
         }
 
 
+    }
+
+    private void sendMessage(String preferredChannel, Client client, Transfer transfer) {
+        String content = "Twoj transfer na kwote: " + transfer.amount() + " zostal wykonany.";
+        if (preferredChannel.equals("SMS")) {
+            logger.info("sending sms to phone number: {}, content: {}", client.getPhoneNumber(), content);
+        } else {
+            logger.info("sending email to email address: {}, content: {}", client.getEmail(), content);
+        }
     }
 
 
