@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AccountService {
+public class AccountService implements MessageSender {
     private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
     private final AccountRepository accountRepository;
@@ -89,14 +89,16 @@ public class AccountService {
 
     }
 
-    private void sendMessage(String preferredChannel, Client client, Transfer transfer, Account account) {
+
+    @Override
+    public void sendMessage(String preferredChannel, Client client, Transfer transfer, Account account) {
         String content = "Your transfer in the amount of " + transfer.amount() + " to bank account " + account.getIdentifier() + " has been executed.";
         if (preferredChannel.equals("SMS")) {
             logger.info("Sending sms to phone number: {}, content: {}", client.getPhoneNumber(), content);
         } else {
             logger.info("Sending email to email address: {}, content: {}", client.getEmail(), content);
+
         }
+
     }
-
-
 }
