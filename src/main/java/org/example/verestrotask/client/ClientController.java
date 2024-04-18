@@ -15,7 +15,7 @@ public class ClientController {
         this.clientService = clientService;
     }
 
-    @PostMapping("/registration")
+    @PostMapping("/register")
     ClientRegistrationResponse registration(@RequestBody ClientRegistration clientRegistration) {
         return clientService.registration(clientRegistration);
 

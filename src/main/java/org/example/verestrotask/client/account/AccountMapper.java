@@ -5,7 +5,10 @@ import org.example.verestrotask.client.account.dto.AccountResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class AccountMapper {
@@ -24,13 +27,10 @@ public class AccountMapper {
         return new AccountResponseDto(account.getIdentifier(), account.getBalance(), account.getDayLimit());
     }
 
-    private int identifier() {
+    private BigInteger identifier() {
         Random random = new Random();
-        int part1 = random.nextInt(100000);
-        int part2 = random.nextInt(100000);
-        int part3 = random.nextInt(100000);
-        int part4 = random.nextInt(100000);
-        return Integer.parseInt(String.format("%05d%05d", part1, part2));
+        String collect = IntStream.range(0, 20).mapToObj(i -> Integer.toString(random.nextInt(10))).collect(Collectors.joining());
+        return new BigInteger(collect);
     }
 
 

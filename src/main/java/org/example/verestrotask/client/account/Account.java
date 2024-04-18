@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 
 @Entity
@@ -13,7 +14,7 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private int identifier;
+    private BigInteger identifier;
     private BigDecimal balance;
     private int dayLimit;
 
@@ -26,11 +27,11 @@ public class Account {
         this.id = id;
     }
 
-    public int getIdentifier() {
+    public BigInteger getIdentifier() {
         return identifier;
     }
 
-    public void setIdentifier(int identifier) {
+    public void setIdentifier(BigInteger identifier) {
         this.identifier = identifier;
     }
 
