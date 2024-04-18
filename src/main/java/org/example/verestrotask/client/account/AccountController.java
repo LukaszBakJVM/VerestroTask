@@ -23,8 +23,8 @@ public class AccountController {
     @PostMapping
     AccountResponseDto setAccount(@RequestBody AccountDto dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String name = authentication.getName();
-        return accountService.setAccount(dto, name);
+        String ownerUsername = authentication.getName();
+        return accountService.setAccount(dto, ownerUsername);
 
 
     }
@@ -37,8 +37,8 @@ public class AccountController {
     @PostMapping("/transfer")
     TransferResponse bankTransfer(@RequestBody Transfer transfer) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String name = authentication.getName();
-        return accountService.send(transfer, name);
+        String ownerUsername = authentication.getName();
+        return accountService.send(transfer, ownerUsername);
 
 
     }

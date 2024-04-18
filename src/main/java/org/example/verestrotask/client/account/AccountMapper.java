@@ -28,6 +28,8 @@ public class AccountMapper {
         Random random = new Random();
         int part1 = random.nextInt(100000);
         int part2 = random.nextInt(100000);
+        int part3 = random.nextInt(100000);
+        int part4 = random.nextInt(100000);
         return Integer.parseInt(String.format("%05d%05d", part1, part2));
     }
 

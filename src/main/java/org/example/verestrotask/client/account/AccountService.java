@@ -72,7 +72,7 @@ public class AccountService {
         transferAccount.setBalance(transferAccount.getBalance().add(transfer.amount()));
         Account save = accountRepository.save(account);
         accountRepository.save(transferAccount);
-        sendMessage(channelNotification, client, transfer);
+        sendMessage(channelNotification, client, transfer, transferAccount);
         return new TransferResponse(save.getBalance());
     }
 
@@ -89,12 +89,12 @@ public class AccountService {
 
     }
 
-    private void sendMessage(String preferredChannel, Client client, Transfer transfer) {
-        String content = "Twoj transfer na kwote: " + transfer.amount() + " zostal wykonany.";
+    private void sendMessage(String preferredChannel, Client client, Transfer transfer, Account account) {
+        String content = "Your transfer in the amount of " + transfer.amount() + " to bank account " + account.getIdentifier() + " has been executed.";
         if (preferredChannel.equals("SMS")) {
-            logger.info("sending sms to phone number: {}, content: {}", client.getPhoneNumber(), content);
+            logger.info("Sending sms to phone number: {}, content: {}", client.getPhoneNumber(), content);
         } else {
-            logger.info("sending email to email address: {}, content: {}", client.getEmail(), content);
+            logger.info("Sending email to email address: {}, content: {}", client.getEmail(), content);
         }
     }
 
