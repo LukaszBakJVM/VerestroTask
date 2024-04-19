@@ -1,15 +1,16 @@
 package org.example.verestrotask.client;
 
 public class ResponseData {
-    static String registrationSuccess(){
-      return
+    static String registrationSuccess() {
+        return
                 """
                         {
-                          "username": "username111",
+                          "username": "username",
                           "phoneNumber": "123456789",
                           "email": "ww@w",
                           "channelNotification": "Sms"
                         }""";
 
     }
+
 }
