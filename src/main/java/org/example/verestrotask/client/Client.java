@@ -11,13 +11,13 @@ public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Size(min = 3)
+    @Size(min = 3, message = "username at least 3 characters")
     private String username;
-    @Size(min = 6)
+
     private String password;
-    @Pattern(regexp = "[0-9]{9}")
+    @Pattern(regexp = "[0-9]{9}", message = "invalid phone number")
     private String phoneNumber;
-    @Email
+    @Email(message = "invalid email")
     private String email;
     @OneToOne
     private Account account;

@@ -1,72 +1,72 @@
 package org.example.verestrotask.client;
 
 import org.example.verestrotask.client.dto.ClientRegistration;
-import org.example.verestrotask.client.dto.ClientRegistrationResponse;
-import org.example.verestrotask.exception.ClientExistException;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
-@ExtendWith(MockitoExtension.class)
-class ClientServiceTest {
+import static org.mockito.Mockito.when;
+
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
+//@Testcontainers
+
+public class ClientServiceTest {
+    @Autowired
+    private WebTestClient webTestClient;
     @Mock
     private ClientRepository clientRepository;
+  /*  @LocalServerPort
+    private static int port;
+    @Container
+    private static final MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:latest")
+            .withDatabaseName("verestrotask")
+            .withUsername("test")
+            .withPassword("test")
+            .withExposedPorts(port);
+    @BeforeAll
+    static void beforeAll() {
+        mysqlContainer.start();
+    }
+    @AfterAll
+    static void afterAll() {
+        mysqlContainer.stop();
+    }*/
 
-    @Mock
-    private ClientMapper clientMapper;
 
-    @InjectMocks
-    private ClientService clientService;
+
 
     @Test
-    void registration_NewClient_Success() {
-        // Arrange
-        ClientRegistration clientRegistration = new ClientRegistration("a","a","a","a","a");
-        Client client = new Client();
-        client.setUsername("user123");
-        client.setPassword("pass");
-        client.setPhoneNumber("123456789");
-        client.setEmail("user@example.com");
-        ClientRegistrationResponse expectedResponse = new ClientRegistrationResponse("a","a","a","a");
-
-        when(clientMapper.registrationDtoToEntity(clientRegistration)).thenReturn(client);
-        when(clientRepository.findByUsername(client.getUsername())).thenReturn(Optional.empty());
-        when(clientRepository.save(client)).thenReturn(client);
-        when(clientMapper.RegistrationResponse(client)).thenReturn(expectedResponse);
-
-        // Act
-        ClientRegistrationResponse actualResponse = clientService.registration(clientRegistration);
-
-        // Assert
-        assertEquals(expectedResponse, actualResponse);
-        verify(clientMapper, times(1)).registrationDtoToEntity(clientRegistration);
-        verify(clientRepository, times(1)).findByUsername(client.getUsername());
-        verify(clientRepository, times(1)).save(client);
-        verify(clientMapper, times(1)).RegistrationResponse(client);
+    void testRegistration_Success() {
+        ClientRegistration clientRegistration = new ClientRegistration("username111", "password", "123456789", "ww@w", "Sms");
+        webTestClient.post().uri("/client/register").contentType(MediaType.APPLICATION_JSON).bodyValue(clientRegistration).exchange().expectStatus().isOk().expectBody()
+                .json(ResponseData.registrationSuccess());
     }
 
     @Test
-    void registration_ExistingClient_ClientExistExceptionThrown() {
-        // Arrange
-        ClientRegistration clientRegistration = new ClientRegistration("a","a","a","a","a");
-        Client client = new Client(/* dane klienta */);
+    void testRegistration_ClientExists() {
+        String existingUsername = "existingUsername11";
 
-        when(clientMapper.registrationDtoToEntity(clientRegistration)).thenReturn(client);
-        when(clientRepository.findByUsername(client.getUsername())).thenReturn(Optional.of(client));
+        when(clientRepository.findByUsername(existingUsername)).thenReturn(Optional.of(new Client()));
 
-        // Act & Assert
-        assertThrows(ClientExistException.class, () -> clientService.registration(clientRegistration));
-        verify(clientMapper, times(1)).registrationDtoToEntity(clientRegistration);
-        verify(clientRepository, times(1)).findByUsername(client.getUsername());
-        verify(clientRepository, never()).save(client);
-        verify(clientMapper, never()).RegistrationResponse(client);
+        ClientRegistration clientRegistration = new ClientRegistration(existingUsername, "password", "3456789", "ww@w", "Sms");
+
+        webTestClient.post().uri("/client/register").contentType(MediaType.APPLICATION_JSON).bodyValue(clientRegistration).exchange().expectStatus().isEqualTo(409).expectBody()
+
+                .jsonPath("$.message").isEqualTo("User with  login " + existingUsername + " exist");
     }
 
 }
