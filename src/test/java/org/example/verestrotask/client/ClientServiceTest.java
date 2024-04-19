@@ -32,6 +32,8 @@ class ClientServiceTest {
         webTestClient.post().uri("/client/register").contentType(MediaType.APPLICATION_JSON).bodyValue(clientRegistration).exchange().expectStatus().isBadRequest();
     }
 
+    //Reszta testów będzie 21.04
+
 }
 
 
