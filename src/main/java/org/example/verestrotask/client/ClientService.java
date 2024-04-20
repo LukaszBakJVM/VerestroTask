@@ -34,11 +34,11 @@ public class ClientService {
         validationClient(client);
         Optional<Client> byUsername = clientRepository.findByUsername(client.getUsername());
         byUsername.ifPresent(p -> {
-            throw new ClientExistException("User with  login " + client.getUsername() + " exist");
+            throw new ClientExistException("User with  username " + client.getUsername() + " exist");
         });
         Client save = clientRepository.save(client);
 
-        return clientMapper.RegistrationResponse(save);
+        return clientMapper.registrationResponse(save);
 
     }
 
