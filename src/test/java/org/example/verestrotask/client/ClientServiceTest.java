@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.Base64;
@@ -36,6 +37,7 @@ class ClientServiceTest {
 
 
     @Test
+    @DirtiesContext
     void testRegistration_Success() {
 
 
@@ -44,6 +46,7 @@ class ClientServiceTest {
     }
 
     @Test
+    @DirtiesContext
     void testValidation() {
 
         ClientRegistration clientRegistration = new ClientRegistration("1", "password", "12345678", "www", "Sms");
@@ -51,6 +54,7 @@ class ClientServiceTest {
     }
 
     @Test
+    @DirtiesContext
     void testAuthenticatedRequest() {
         String username = "lukasz";
         String password = "lukasz";
@@ -58,9 +62,12 @@ class ClientServiceTest {
         String basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", basicAuth);
+        String balance = "{\"balance\": \"KOD_2\"}";
 
-        webTestClient.get().uri("/account/promotions").headers(httpHeaders -> httpHeaders.putAll(headers)).accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
-
+        webTestClient.post().uri("/account").headers(httpHeaders -> {
+            httpHeaders.putAll(headers);
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isOk().expectBody().jsonPath("$.identifier").isNumber().jsonPath("$.balance").isEqualTo(200).jsonPath("$.dayLimit").isEqualTo(3);
     }
 
 }
