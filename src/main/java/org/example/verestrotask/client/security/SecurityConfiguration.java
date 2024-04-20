@@ -20,8 +20,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.formLogin(AbstractAuthenticationFilterConfigurer::permitAll);
-        http.authorizeHttpRequests(requests -> requests.requestMatchers("/client/register").permitAll()
-                .anyRequest().authenticated()).httpBasic(Customizer.withDefaults());
+        http.authorizeHttpRequests(requests -> requests.requestMatchers("/client/register").permitAll().anyRequest().authenticated()).httpBasic(Customizer.withDefaults());
 
         http.csrf(AbstractHttpConfigurer::disable);
         return http.build();
@@ -31,6 +30,7 @@ public class SecurityConfiguration {
     PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+
     @Bean
     public LocalValidatorFactoryBean validator() {
         return new LocalValidatorFactoryBean();
