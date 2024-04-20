@@ -2,7 +2,6 @@ package org.example.verestrotask.client;
 
 
 import org.example.verestrotask.client.dto.ClientRegistration;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -27,14 +26,6 @@ class ClientServiceTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @BeforeEach
-    public void setup() {
-        Client user = new Client();
-        user.setUsername("lukasz");
-        user.setPassword(passwordEncoder.encode("lukasz"));
-        clientRepository.save(user);
-    }
-
 
     @Test
     @DirtiesContext
@@ -54,6 +45,7 @@ class ClientServiceTest {
     @Test
     @DirtiesContext
     void testAccountCreation() {
+        setupClientLogin();
         String username = "lukasz";
         String password = "lukasz";
 
@@ -66,6 +58,13 @@ class ClientServiceTest {
             httpHeaders.putAll(headers);
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isOk().expectBody().jsonPath("$.identifier").isNumber().jsonPath("$.balance").isEqualTo(200).jsonPath("$.dayLimit").isEqualTo(3);
+    }
+
+    private void setupClientLogin() {
+        Client user = new Client();
+        user.setUsername("lukasz");
+        user.setPassword(passwordEncoder.encode("lukasz"));
+        clientRepository.save(user);
     }
 
 }
