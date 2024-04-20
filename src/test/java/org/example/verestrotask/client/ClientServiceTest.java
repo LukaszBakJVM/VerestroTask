@@ -1,6 +1,8 @@
 package org.example.verestrotask.client;
 
 
+import org.example.verestrotask.client.account.Account;
+import org.example.verestrotask.client.account.AccountRepository;
 import org.example.verestrotask.client.dto.ClientRegistration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Base64;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -19,10 +23,11 @@ import java.util.Base64;
 class ClientServiceTest {
 
     @Autowired
+    AccountRepository accountRepository;
+    @Autowired
     private WebTestClient webTestClient;
     @Autowired
     private ClientRepository clientRepository;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -59,12 +64,121 @@ class ClientServiceTest {
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isOk().expectBody().jsonPath("$.identifier").isNumber().jsonPath("$.balance").isEqualTo(200).jsonPath("$.dayLimit").isEqualTo(3);
     }
+    @Test
+    @DirtiesContext
+    void testSecondAccountCreation() {
+        setupClientLoginAndAccount();
+        String username = "lukasz";
+        String password = "lukasz";
+
+        String basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", basicAuth);
+        String balance = "{\"balance\": \"KOD_2\"}";
+        String response = "{\"message\": \"You can  have only 1 account\"}";
+
+        webTestClient.post().uri("/account").headers(httpHeaders -> {
+            httpHeaders.putAll(headers);
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isEqualTo(409)
+                .expectBody().json(response);
+    }
+
+    @Test
+    @DirtiesContext
+    void testTransferOk() {
+        setupClientLoginAndAccount();
+        makeTransfer();
+
+        String username = "lukasz";
+        String password = "lukasz";
+        String basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", basicAuth);
+        String balance = "{\"identifier\": \"12345678901234567890\", \"amount\": 10}";
+
+        webTestClient.post().uri("/account/transfer").headers(httpHeaders -> {
+            httpHeaders.putAll(headers);
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isOk();
+
+
+
+    }
+    @Test
+    @DirtiesContext
+    void testAccountNotExist(){
+        setupClientLogin();
+        String username = "lukasz";
+        String password = "lukasz";
+        String balance = "{\"identifier\": \"12345678901234567890\", \"amount\": 10}";
+        String response = "{\"message\": \"Account  12345678901234567890 does not exist\"}";
+
+        String basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", basicAuth);
+
+        webTestClient.post().uri("/account/transfer").headers(httpHeaders -> {
+            httpHeaders.putAll(headers);
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isEqualTo(409)
+                .expectBody().json(response);
+
+
+    }
+
 
     private void setupClientLogin() {
-        Client user = new Client();
-        user.setUsername("lukasz");
-        user.setPassword(passwordEncoder.encode("lukasz"));
-        clientRepository.save(user);
+
+
+
+        Client client = new Client();
+        client.setUsername("lukasz");
+        client.setPassword(passwordEncoder.encode("lukasz"));
+        client.setPhoneNumber("987654321");
+        client.setEmail("interia@pl");
+        PreferredNotificationChannel preferredNotificationChannel = PreferredNotificationChannel.SMS;
+        client.setPreferredNotificationChannel(preferredNotificationChannel);
+
+        clientRepository.save(client);
+    }
+
+    private void setupClientLoginAndAccount() {
+
+        BigInteger accountIdentifier = new BigInteger("09876543210987654321");
+        Account account = new Account();
+        account.setIdentifier(accountIdentifier);
+        account.setBalance(BigDecimal.valueOf(100));
+        account.setDayLimit(3);
+        accountRepository.save(account);
+
+
+        Client client = new Client();
+        client.setUsername("lukasz");
+        client.setPassword(passwordEncoder.encode("lukasz"));
+        client.setPhoneNumber("987654321");
+        client.setEmail("interia@pl");
+        PreferredNotificationChannel preferredNotificationChannel = PreferredNotificationChannel.SMS;
+        client.setPreferredNotificationChannel(preferredNotificationChannel);
+        client.setAccount(account);
+        clientRepository.save(client);
+    }
+
+    private void makeTransfer() {
+        BigInteger bigInteger = new BigInteger("12345678901234567890");
+        Client client = new Client();
+        Account account = new Account();
+        account.setIdentifier(bigInteger);
+        account.setBalance(BigDecimal.valueOf(100));
+        account.setDayLimit(3);
+        accountRepository.save(account);
+        client.setUsername("transfer");
+        client.setPassword(passwordEncoder.encode("transfer"));
+        client.setAccount(account);
+        clientRepository.save(client);
+        clientRepository.save(client);
+
+
     }
 
 }
