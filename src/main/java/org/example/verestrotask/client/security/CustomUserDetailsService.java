@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return clientService.findByUsername(username).map(this::createUserDetails).orElseThrow(()-> new  ClientExistException("Wrong login or password"));
+        return clientService.findByUsername(username).map(this::createUserDetails).orElseThrow(() -> new ClientExistException("Wrong login or password"));
     }
 
     private UserDetails createUserDetails(ClientLogin login) {

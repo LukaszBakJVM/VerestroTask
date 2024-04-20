@@ -64,6 +64,7 @@ class ClientServiceTest {
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isOk().expectBody().jsonPath("$.identifier").isNumber().jsonPath("$.balance").isEqualTo(200).jsonPath("$.dayLimit").isEqualTo(3);
     }
+
     @Test
     @DirtiesContext
     void testSecondAccountCreation() {
@@ -78,9 +79,9 @@ class ClientServiceTest {
         String response = "{\"message\": \"You can  have only 1 account\"}";
 
         webTestClient.post().uri("/account").headers(httpHeaders -> {
-            httpHeaders.putAll(headers);
-            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isEqualTo(409)
+                    httpHeaders.putAll(headers);
+                    httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+                }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isEqualTo(409)
                 .expectBody().json(response);
     }
 
@@ -103,11 +104,11 @@ class ClientServiceTest {
         }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isOk();
 
 
-
     }
+
     @Test
     @DirtiesContext
-    void testAccountNotExist(){
+    void testAccountNotExist() {
         setupClientLogin();
         String username = "lukasz";
         String password = "lukasz";
@@ -119,9 +120,9 @@ class ClientServiceTest {
         headers.add("Authorization", basicAuth);
 
         webTestClient.post().uri("/account/transfer").headers(httpHeaders -> {
-            httpHeaders.putAll(headers);
-            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isEqualTo(409)
+                    httpHeaders.putAll(headers);
+                    httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+                }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isEqualTo(409)
                 .expectBody().json(response);
 
 
@@ -129,7 +130,6 @@ class ClientServiceTest {
 
 
     private void setupClientLogin() {
-
 
 
         Client client = new Client();
