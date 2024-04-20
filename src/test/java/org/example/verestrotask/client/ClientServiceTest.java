@@ -39,8 +39,6 @@ class ClientServiceTest {
     @Test
     @DirtiesContext
     void testRegistration_Success() {
-
-
         ClientRegistration clientRegistration = new ClientRegistration("username", "password", "123456789", "ww@w", "Sms");
         webTestClient.post().uri("/client/register").contentType(MediaType.APPLICATION_JSON).bodyValue(clientRegistration).exchange().expectStatus().isOk().expectBody().json(ResponseData.registrationSuccess());
     }
@@ -55,7 +53,7 @@ class ClientServiceTest {
 
     @Test
     @DirtiesContext
-    void testAuthenticatedRequest() {
+    void testAccountCreation() {
         String username = "lukasz";
         String password = "lukasz";
 
