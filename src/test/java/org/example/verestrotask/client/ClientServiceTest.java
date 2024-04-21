@@ -18,6 +18,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Base64;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 class ClientServiceTest {
@@ -50,6 +52,7 @@ class ClientServiceTest {
     @Test
     @DirtiesContext
     void testAccountCreation() {
+
         setupClientLogin();
         String username = "lukasz";
         String password = "lukasz";
@@ -58,6 +61,7 @@ class ClientServiceTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", basicAuth);
         String balance = "{\"balance\": \"KOD_2\"}";
+
 
         webTestClient.post().uri("/account").headers(httpHeaders -> {
             httpHeaders.putAll(headers);
@@ -79,15 +83,15 @@ class ClientServiceTest {
         String response = "{\"message\": \"You can  have only 1 account\"}";
 
         webTestClient.post().uri("/account").headers(httpHeaders -> {
-                    httpHeaders.putAll(headers);
-                    httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-                }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isEqualTo(409)
-                .expectBody().json(response);
+            httpHeaders.putAll(headers);
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isEqualTo(409).expectBody().json(response);
     }
 
     @Test
     @DirtiesContext
     void testTransferOk() {
+
         setupClientLoginAndAccount();
         makeTransfer();
 
@@ -96,12 +100,26 @@ class ClientServiceTest {
         String basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", basicAuth);
-        String balance = "{\"identifier\": \"12345678901234567890\", \"amount\": 10}";
+        String balance = "{\"identifier\": \"12345678901234567890\", \"amount\": 10.00}";
 
         webTestClient.post().uri("/account/transfer").headers(httpHeaders -> {
             httpHeaders.putAll(headers);
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isOk();
+        }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isOk().expectBody()
+                .jsonPath("$.accountBalance").isEqualTo(90.00);
+
+
+
+
+        BigInteger accountIdentifier = new BigInteger("12345678901234567890");
+        Account account = accountRepository.findByIdentifier(accountIdentifier).orElseThrow();
+        BigDecimal accountBalanceAfterTransfer = account.getBalance();
+        BigDecimal result = new BigDecimal("110.00");
+
+
+
+
+        assertEquals(accountBalanceAfterTransfer, result);
 
 
     }
@@ -120,10 +138,9 @@ class ClientServiceTest {
         headers.add("Authorization", basicAuth);
 
         webTestClient.post().uri("/account/transfer").headers(httpHeaders -> {
-                    httpHeaders.putAll(headers);
-                    httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-                }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isEqualTo(409)
-                .expectBody().json(response);
+            httpHeaders.putAll(headers);
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isEqualTo(409).expectBody().json(response);
 
 
     }
@@ -144,11 +161,12 @@ class ClientServiceTest {
     }
 
     private void setupClientLoginAndAccount() {
+        BigDecimal balance = new BigDecimal("100.00");
 
         BigInteger accountIdentifier = new BigInteger("09876543210987654321");
         Account account = new Account();
         account.setIdentifier(accountIdentifier);
-        account.setBalance(BigDecimal.valueOf(100));
+        account.setBalance(balance);
         account.setDayLimit(3);
         accountRepository.save(account);
 
@@ -165,11 +183,12 @@ class ClientServiceTest {
     }
 
     private void makeTransfer() {
+        BigDecimal balance = new BigDecimal("100.00");
         BigInteger bigInteger = new BigInteger("12345678901234567890");
         Client client = new Client();
         Account account = new Account();
         account.setIdentifier(bigInteger);
-        account.setBalance(BigDecimal.valueOf(100));
+        account.setBalance(balance);
         account.setDayLimit(3);
         accountRepository.save(account);
         client.setUsername("transfer");
