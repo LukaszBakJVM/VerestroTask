@@ -58,11 +58,11 @@ public class Account {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Account account = (Account) o;
-        return dayLimit == account.dayLimit && Objects.equals(identifier, account.identifier) && Objects.equals(balance, account.balance);
+        return id == account.id && dayLimit == account.dayLimit && Objects.equals(identifier, account.identifier) && Objects.equals(balance, account.balance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(identifier, balance, dayLimit);
+        return Objects.hash(id, identifier, balance, dayLimit);
     }
 }

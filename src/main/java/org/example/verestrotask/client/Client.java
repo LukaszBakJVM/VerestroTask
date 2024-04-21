@@ -87,11 +87,11 @@ public class Client {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Client client = (Client) o;
-        return Objects.equals(username, client.username) && Objects.equals(password, client.password) && Objects.equals(phoneNumber, client.phoneNumber) && Objects.equals(email, client.email) && preferredNotificationChannel == client.preferredNotificationChannel;
+        return id == client.id && Objects.equals(username, client.username) && Objects.equals(password, client.password) && Objects.equals(phoneNumber, client.phoneNumber) && Objects.equals(email, client.email) && preferredNotificationChannel == client.preferredNotificationChannel;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, password, phoneNumber, email, preferredNotificationChannel);
+        return Objects.hash(id, username, password, phoneNumber, email, preferredNotificationChannel);
     }
 }
