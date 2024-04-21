@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
@@ -16,7 +15,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -57,14 +55,12 @@ class ClientServiceTest {
         String username = "lukasz";
         String password = "lukasz";
 
-        String basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", basicAuth);
+
         String balance = "{\"balance\": \"KOD_2\"}";
 
 
         webTestClient.post().uri("/account").headers(httpHeaders -> {
-            httpHeaders.putAll(headers);
+            httpHeaders.setBasicAuth(username, password);
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isOk().expectBody().jsonPath("$.identifier").isNumber().jsonPath("$.balance").isEqualTo(200).jsonPath("$.dayLimit").isEqualTo(3);
     }
@@ -76,14 +72,12 @@ class ClientServiceTest {
         String username = "lukasz";
         String password = "lukasz";
 
-        String basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", basicAuth);
+
         String balance = "{\"balance\": \"KOD_2\"}";
         String response = "{\"message\": \"You can  have only 1 account\"}";
 
         webTestClient.post().uri("/account").headers(httpHeaders -> {
-            httpHeaders.putAll(headers);
+            httpHeaders.setBasicAuth(username, password);
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isEqualTo(409).expectBody().json(response);
     }
@@ -97,26 +91,20 @@ class ClientServiceTest {
 
         String username = "lukasz";
         String password = "lukasz";
-        String basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", basicAuth);
+
+
         String balance = "{\"identifier\": \"12345678901234567890\", \"amount\": 10.00}";
 
         webTestClient.post().uri("/account/transfer").headers(httpHeaders -> {
-            httpHeaders.putAll(headers);
+            httpHeaders.setBasicAuth(username, password);
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isOk().expectBody()
-                .jsonPath("$.accountBalance").isEqualTo(90.00);
-
-
+        }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isOk().expectBody().jsonPath("$.accountBalance").isEqualTo(90.00);
 
 
         BigInteger accountIdentifier = new BigInteger("12345678901234567890");
         Account account = accountRepository.findByIdentifier(accountIdentifier).orElseThrow();
         BigDecimal accountBalanceAfterTransfer = account.getBalance();
         BigDecimal result = new BigDecimal("110.00");
-
-
 
 
         assertEquals(accountBalanceAfterTransfer, result);
@@ -133,12 +121,9 @@ class ClientServiceTest {
         String balance = "{\"identifier\": \"12345678901234567890\", \"amount\": 10}";
         String response = "{\"message\": \"Account  12345678901234567890 does not exist\"}";
 
-        String basicAuth = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", basicAuth);
 
         webTestClient.post().uri("/account/transfer").headers(httpHeaders -> {
-            httpHeaders.putAll(headers);
+            httpHeaders.setBasicAuth(username, password);
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         }).accept(MediaType.APPLICATION_JSON).bodyValue(balance).exchange().expectStatus().isEqualTo(409).expectBody().json(response);
 
