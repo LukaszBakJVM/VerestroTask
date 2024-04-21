@@ -17,7 +17,7 @@ public class Client {
     private String username;
 
     private String password;
-    @Pattern(regexp = "[0-9]{9}", message = "invalid phone number")
+    @Pattern(regexp = "\\d{9}", message = "invalid phone number")
     private String phoneNumber;
     @Email(message = "invalid email")
     private String email;
