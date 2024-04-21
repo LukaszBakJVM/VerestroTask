@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.example.verestrotask.client.account.Account;
 
+import java.util.Objects;
+
 @Entity
 public class Client {
     @Id
@@ -78,5 +80,18 @@ public class Client {
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Client client = (Client) o;
+        return Objects.equals(username, client.username) && Objects.equals(password, client.password) && Objects.equals(phoneNumber, client.phoneNumber) && Objects.equals(email, client.email) && preferredNotificationChannel == client.preferredNotificationChannel;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, password, phoneNumber, email, preferredNotificationChannel);
     }
 }
