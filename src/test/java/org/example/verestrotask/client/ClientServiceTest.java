@@ -71,7 +71,7 @@ class ClientServiceTest {
 
     @Test
     @DirtiesContext
-    void testSecondAccountCreation() {
+    void testSecondAccountFotClientCreation() {
         setupClientLoginAndAccount();
         String username = "lukasz";
         String password = "lukasz";
