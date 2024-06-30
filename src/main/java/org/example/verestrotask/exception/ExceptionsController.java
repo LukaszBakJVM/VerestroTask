@@ -36,7 +36,7 @@ public class ExceptionsController {
 
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, Object> limit(ValidationException ex) {
+    public Map<String, Object> validation(ValidationException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("message", ex.getMessage());
         return response;
