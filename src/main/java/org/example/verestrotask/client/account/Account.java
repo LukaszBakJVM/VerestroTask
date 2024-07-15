@@ -7,7 +7,6 @@ import jakarta.persistence.Id;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Objects;
 
 
 @Entity
@@ -53,16 +52,5 @@ public class Account {
         this.dayLimit = dayLimit;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Account account = (Account) o;
-        return id == account.id && dayLimit == account.dayLimit && Objects.equals(identifier, account.identifier) && Objects.equals(balance, account.balance);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, identifier, balance, dayLimit);
-    }
 }
